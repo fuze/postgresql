@@ -30,7 +30,7 @@ env:
   - INSTANCE=repo-fedora-28
   - INSTANCE=repo-ubuntu-1604
   # - INSTANCE=repo-ubuntu-1804 This is not working in travis
-  - INSTANCE=server-install-amazonlinux
+  # - INSTANCE=server-install-amazonlinux This is not working in travis
   - INSTANCE=server-install-centos-6
   - INSTANCE=server-install-centos-7
   - INSTANCE=server-install-debian-8
@@ -47,14 +47,14 @@ env:
   - INSTANCE=client-install-ubuntu-1604
   - INSTANCE=client-install-ubuntu-1804
   # - INSTANCE=access-ubuntu-1804 This is not working in travis
-  - INSTANCE=access-amazonlinux
+  # - INSTANCE=access-amazonlinux This is not working in travis
   - INSTANCE=access-centos-6
   - INSTANCE=access-centos-7
   - INSTANCE=access-debian-8
   - INSTANCE=access-debian-9
   - INSTANCE=access-fedora-28
   - INSTANCE=access-ubuntu-1604
-  - INSTANCE=ident-amazonlinux
+  # - INSTANCE=ident-amazonlinux This is not working in travis
   - INSTANCE=ident-centos-6
   - INSTANCE=ident-centos-7
   - INSTANCE=ident-fedora-28
