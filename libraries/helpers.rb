@@ -137,7 +137,8 @@ module PostgresqlCookbook
       psql_command_string(new_resource, sql)
     end
 
-    def data_dir(version = node.run_state['postgresql']['version'])
+    def data_dir(override_data_dir = node.run_state['postgresql']['data_dir'], version = node.run_state['postgresql']['version'])
+      return override_data_dir if override_data_dir
       case node['platform_family']
       when 'rhel', 'fedora'
         "/var/lib/pgsql/#{version}/data"
@@ -152,7 +153,8 @@ module PostgresqlCookbook
       end
     end
 
-    def conf_dir(version = node.run_state['postgresql']['version'])
+    def conf_dir(override_conf_dir = node.run_state['postgresql']['conf_dir'], version = node.run_state['postgresql']['version'])
+      return override_conf_dir if override_conf_dir
       case node['platform_family']
       when 'rhel', 'fedora'
         "/var/lib/pgsql/#{version}/data"
@@ -168,15 +170,15 @@ module PostgresqlCookbook
     end
 
     # determine the platform specific service name
-    def platform_service_name(version = node.run_state['postgresql']['version'])
+    def platform_service_name(version)
       case node['platform_family']
       when 'rhel', 'fedora'
-        "postgresql-#{version}"
+        "postgresql-#{pg_base_ver(version)}"
       when 'amazon'
         if node['virtualization']['system'] == 'docker'
-          "postgresql#{version.delete('.')}"
+          "postgresql#{pg_base_ver(version)}"
         else
-          "postgresql-#{version}"
+          "postgresql-#{pg_base_ver(version)}"
         end
       else
         'postgresql'
@@ -200,7 +202,7 @@ module PostgresqlCookbook
 
     # determine the platform specific server package name
     def server_pkg_name
-      platform_family?('debian') ? "postgresql-#{new_resource.version}" : "postgresql#{new_resource.version.delete('.')}-server"
+      platform_family?('debian') ? "postgresql-#{new_resource.version}" : "postgresql#{new_resource.version.gsub(/\..*/, '')}-server-#{new_resource.version}"
     end
 
     # determine the appropriate DB init command to run based on RHEL/Fedora/Amazon release
@@ -210,15 +212,25 @@ module PostgresqlCookbook
       cmd = if platform_family?('amazon')
               '/usr/bin/initdb'
             else
-              "/usr/pgsql-#{new_resource.version}/bin/initdb"
+              "/usr/pgsql-#{pg_base_ver(new_resource.version)}/bin/initdb"
             end
       cmd << " --locale '#{new_resource.initdb_locale}'" if new_resource.initdb_locale
-      cmd << " -D '#{data_dir(new_resource.version)}'"
+      cmd << " -D '#{data_dir}'"
+    end
+
+    # Since postgresql ver. 10 pgsql base version changed to main release i.e. 10,11
+    # instead of 9.5,9.6 etc.
+    def pg_base_ver(version)
+      if version.to_s >= '10'
+        version.to_s.gsub(/\..*/, '').to_s
+      else
+        version.to_s
+      end
     end
 
     # Given the base URL build the complete URL string for a yum repo
     def yum_repo_url(base_url)
-      "#{base_url}/#{new_resource.version}/#{yum_repo_platform_family_string}/#{yum_repo_platform_string}"
+      "#{base_url}/#{pg_base_ver(new_resource.version)}/#{yum_repo_platform_family_string}/#{yum_repo_platform_string}"
     end
 
     # The postgresql yum repos URLs are organized into redhat and fedora directories.s
