@@ -28,44 +28,44 @@ action :add do
   case node['platform_family']
 
   when 'rhel', 'fedora', 'amazon'
-    remote_file "/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{new_resource.version}" do
+    remote_file "/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{pg_base_ver(new_resource.version)}" do
       source new_resource.yum_gpg_key_uri
     end
 
-    yum_repository "PostgreSQL #{new_resource.version}" do # ~FC005
-      repositoryid "pgdg#{new_resource.version}"
-      description "PostgreSQL.org #{new_resource.version}"
+    yum_repository "PostgreSQL #{pg_base_ver(new_resource.version)}" do # ~FC005
+      repositoryid "pgdg#{pg_base_ver(new_resource.version)}"
+      description "PostgreSQL.org #{pg_base_ver(new_resource.version)}"
       baseurl     yum_repo_url('https://download.postgresql.org/pub/repos/yum')
       enabled     new_resource.enable_pgdg
       gpgcheck    true
-      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{new_resource.version}"
+      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{pg_base_ver(new_resource.version)}"
     end
 
-    yum_repository "PostgreSQL #{new_resource.version} - source " do
-      repositoryid "pgdg#{new_resource.version}-source"
-      description "PostgreSQL.org #{new_resource.version} Source"
+    yum_repository "PostgreSQL #{pg_base_ver(new_resource.version)} - source " do
+      repositoryid "pgdg#{pg_base_ver(new_resource.version)}-source"
+      description "PostgreSQL.org #{pg_base_ver(new_resource.version)} Source"
       baseurl     yum_repo_url('https://download.postgresql.org/pub/repos/yum/srpms')
       enabled     new_resource.enable_pgdg_source
       gpgcheck    true
-      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{new_resource.version}"
+      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{pg_base_ver(new_resource.version)}"
     end
 
-    yum_repository "PostgreSQL #{new_resource.version} - updates testing" do
-      repositoryid "pgdg#{new_resource.version}-updates-testing"
-      description "PostgreSQL.org #{new_resource.version} Updates Testing"
+    yum_repository "PostgreSQL #{pg_base_ver(new_resource.version)} - updates testing" do
+      repositoryid "pgdg#{pg_base_ver(new_resource.version)}-updates-testing"
+      description "PostgreSQL.org #{pg_base_ver(new_resource.version)} Updates Testing"
       baseurl     yum_repo_url('https://download.postgresql.org/pub/repos/yum/testing')
       enabled     new_resource.enable_pgdg_updates_testing
       gpgcheck    true
-      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{new_resource.version}"
+      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{pg_base_ver(new_resource.version)}"
     end
 
-    yum_repository "PostgreSQL #{new_resource.version} - source - updates testing" do
-      repositoryid "pgdg#{new_resource.version}-source-updates-testing"
-      description "PostgreSQL.org #{new_resource.version} Source Updates Testing"
+    yum_repository "PostgreSQL #{pg_base_ver(new_resource.version)} - source - updates testing" do
+      repositoryid "pgdg#{pg_base_ver(new_resource.version)}-source-updates-testing"
+      description "PostgreSQL.org #{pg_base_ver(new_resource.version)} Source Updates Testing"
       baseurl     yum_repo_url('https://download.postgresql.org/pub/repos/yum/srpms/testing')
       enabled     new_resource.enable_pgdg_source_updates_testing
       gpgcheck    true
-      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{new_resource.version}"
+      gpgkey      "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-#{pg_base_ver(new_resource.version)}"
     end
 
   when 'debian'
@@ -75,7 +75,7 @@ action :add do
 
     apt_repository 'postgresql_org_repository' do
       uri          'https://download.postgresql.org/pub/repos/apt/'
-      components   ['main', new_resource.version.to_s]
+      components   ['main', pg_base_ver(new_resource.version).to_s]
       distribution "#{node['lsb']['codename']}-pgdg"
       key new_resource.apt_gpg_key_uri
       cache_rebuild true

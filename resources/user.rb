@@ -22,6 +22,7 @@ property :createrole,         [true, false], default: false
 property :inherit,            [true, false], default: true
 property :replication,        [true, false], default: false
 property :login,              [true, false], default: true
+property :bypassrls,          [true, false], default: false
 property :password,           String
 property :encrypted_password, String
 property :valid_until,        String

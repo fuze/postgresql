@@ -25,11 +25,7 @@ action :install do
     only_if { new_resource.setup_repo }
   end
 
-  case node['platform_family']
-  when 'debian'
-    package "postgresql-client-#{new_resource.version}"
-  when 'rhel', 'fedora', 'amazon'
-    ver = new_resource.version.delete('.')
-    package "postgresql#{ver}"
+  package "postgresql-client-#{new_resource.version}" do
+    only_if { platform_family?('debian') }
   end
 end
